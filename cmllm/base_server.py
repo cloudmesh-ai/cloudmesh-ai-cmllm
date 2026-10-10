@@ -1,8 +1,12 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, AsyncGenerator
 import uvicorn
 import random
+import time
+import json
+import asyncio
 
 from .providers import get_provider, list_available_providers
 
@@ -57,12 +61,34 @@ class EmbeddingResponse(BaseModel):
     model: str
     usage: Dict[str, int]
 
+# --- Helper for OpenAI Streaming Format ---
+
+async def openai_stream_generator(provider, text: str, model: str, chat=True):
+    """Generates OpenAI-compatible Server-Sent Events (SSE)."""
+    chat_id = f"chatcmx-{random.randint(1000, 9999)}"
+    created = int(time.time())
+
+    async for chunk in provider.stream_prompt(text, model):
+        data = {
+            "id": chat_id,
+            "object": "chat.completion.chunk" if chat else "text_completion.chunk",
+            "created": created,
+            "model": model,
+            "choices": [{
+                "index": 0,
+                "delta": {"content": chunk} if chat else {"text": chunk},
+                "finish_reason": None
+            }]
+        }
+        yield f"data: {json.dumps(data)}\n\n"
+
+    yield "data: [DONE]\n\n"
+
 # --- Routes ---
 
 @app.get("/v1/models")
 async def list_models():
     """Lists available mock models."""
-    # For simplicity, we combine models from available providers
     all_models = []
     for p_name in list_available_providers():
         provider = get_provider(p_name, {})
@@ -71,10 +97,9 @@ async def list_models():
 
     return {"object": "list", "data": all_models}
 
-@app.post("/v1/chat/completions", response_model=ChatCompletionResponse)
+@app.post("/v1/chat/completions")
 async def chat_completions(request: ChatCompletionRequest):
-    """Conversational endpoint."""
-    # Extract provider from model ID (e.g., "ollama-llama3") or default
+    """Conversational endpoint with streaming support."""
     model_id = request.model
     provider_name = model_id.split('-')[0] if '-' in model_id else "ollama"
     actual_model = model_id.split('-')[1] if '-' in model_id else model_id
@@ -82,9 +107,14 @@ async def chat_completions(request: ChatCompletionRequest):
     try:
         provider = get_provider(provider_name, {})
         user_text = request.messages[-1].content if request.messages else ""
-        response_text = provider.prompt(user_text, model=actual_model)
 
-        import time
+        if request.stream:
+            return StreamingResponse(
+                openai_stream_generator(provider, user_text, model_id, chat=True),
+                media_type="text/event-stream"
+            )
+
+        response_text = provider.prompt(user_text, model=actual_model)
         return ChatCompletionResponse(
             id=f"chatcmx-{random.randint(1000, 9999)}",
             created=int(time.time()),
@@ -95,7 +125,7 @@ async def chat_completions(request: ChatCompletionRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/v1/completions", response_model=CompletionResponse)
+@app.post("/v1/completions")
 async def completions(request: CompletionRequest):
     """Legacy text-completion endpoint."""
     model_id = request.model
@@ -106,7 +136,6 @@ async def completions(request: CompletionRequest):
         provider = get_provider(provider_name, {})
         response_text = provider.prompt(request.prompt, model=actual_model)
 
-        import time
         return CompletionResponse(
             id=f"cmpx-{random.randint(1000, 9999)}",
             created=int(time.time()),
@@ -122,7 +151,6 @@ async def embeddings(request: EmbeddingRequest):
     inputs = [request.input] if isinstance(request.input, str) else request.input
     data = []
     for text in inputs:
-        # Generate a deterministic mock vector
         vector = [random.uniform(-1, 1) for _ in range(1536)]
         data.append({"object": "embedding", "embedding": vector, "index": inputs.index(text)})
 
