@@ -1,0 +1,10 @@
+site_name: Cloudmesh AI CMLLM Documentation
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Configuration: configuration.md
+  - CLI Reference: cli.md
+  - Architecture: architecture.md
+  - Contributing: contributing.md
