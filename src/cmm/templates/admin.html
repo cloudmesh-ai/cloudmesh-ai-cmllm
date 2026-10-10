@@ -22,81 +22,80 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Configuration Panel -->
             <div class="lg:col-span-1 space-y-6">
-                <section class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        Global Settings
-                    </h2>
 
-                    <form hx-post="/admin/config" hx-trigger="change" hx-swap="none" class="space-y-6">
-                        <!-- Provider Dropdown -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-400 mb-2">Active Provider</label>
-                            <select name="active_provider" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                                <option value="mock">Mock Provider</option>
-                                <option value="openai">OpenAI Emulation</option>
-                                <option value="anthropic">Anthropic Emulation</option>
-                                <option value="google">Google Emulation</option>
-                            </select>
-                        </div>
-
-                        <!-- Failure Rate Slider -->
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <label class="text-sm font-medium text-slate-400">Failure Rate</label>
-                                <span id="failure-val" class="text-sm text-blue-400 font-mono">{{ (state.failure_rate * 100)|int }}%</span>
+                <!-- Global Settings -->
+                <section class="bg-slate-800 rounded-xl border border-slate-700 shadow-xl overflow-hidden">
+                    <button onclick="document.getElementById('global-settings-content').classList.toggle('hidden')"
+                            class="w-full p-6 flex justify-between items-center hover:bg-slate-700/50 transition-colors">
+                        <h2 class="text-xl font-semibold flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            Global Settings
+                        </h2>
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="global-settings-content" class="p-6 pt-0 space-y-6">
+                        <form hx-post="/admin/config" hx-trigger="change" hx-swap="none" class="space-y-6">
+                            <div class="pt-4">
+                                <label class="block text-sm font-medium text-slate-400 mb-2">Active Provider</label>
+                                <select name="active_provider" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                    <option value="mock">Mock Provider</option>
+                                    <option value="openai">OpenAI Emulation</option>
+                                    <option value="anthropic">Anthropic Emulation</option>
+                                    <option value="google">Google Emulation</option>
+                                </select>
                             </div>
-                            <input type="range" name="failure_rate" min="0" max="100" value="{{ (state.failure_rate * 100)|int }}"
-                                   oninput="document.getElementById('failure-val').innerText = this.value + '%'"
-                                   class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
-                        </div>
-
-                        <!-- Latency Range -->
-                        <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <div class="flex justify-between mb-2">
-                                    <label class="text-sm font-medium text-slate-400">Min Latency (s)</label>
-                                    <span id="min-latency-val" class="text-sm text-blue-400 font-mono">{{ state.latency_range[0] }}s</span>
+                                    <label class="text-sm font-medium text-slate-400">Failure Rate</label>
+                                    <span id="failure-val" class="text-sm text-blue-400 font-mono">{{ (state.failure_rate * 100)|int }}%</span>
                                 </div>
-                                <input type="range" name="latency_min" min="0" max="5" step="0.1" value="{{ state.latency_range[0] }}"
-                                       oninput="document.getElementById('min-latency-val').innerText = this.value + 's'"
+                                <input type="range" name="failure_rate" min="0" max="100" value="{{ (state.failure_rate * 100)|int }}"
+                                       oninput="document.getElementById('failure-val').innerText = this.value + '%'"
+                                       class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <label class="text-sm font-medium text-slate-400">Min Latency (s)</label>
+                                        <span id="min-latency-val" class="text-sm text-blue-400 font-mono">{{ state.latency_range[0] }}s</span>
+                                    </div>
+                                    <input type="range" name="latency_min" min="0" max="5" step="0.1" value="{{ state.latency_range[0] }}"
+                                           oninput="document.getElementById('min-latency-val').innerText = this.value + 's'"
+                                           class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <label class="text-sm font-medium text-slate-400">Max Latency (s)</label>
+                                        <span id="max-latency-val" class="text-sm text-blue-400 font-mono">{{ state.latency_range[1] }}s</span>
+                                    </div>
+                                    <input type="range" name="latency_max" min="0" max="5" step="0.1" value="{{ state.latency_range[1] }}"
+                                           oninput="document.getElementById('max-latency-val').innerText = this.value + 's'"
+                                           class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <label class="text-sm font-medium text-slate-400">TPM Limit</label>
+                                    <span id="tpm-limit-val" class="text-sm text-blue-400 font-mono">{{ state.tpm_limit }}</span>
+                                </div>
+                                <input type="range" name="tpm_limit" min="1000" max="1000000" step="1000" value="{{ state.tpm_limit }}"
+                                       oninput="document.getElementById('tpm-limit-val').innerText = this.value"
                                        class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
                             </div>
                             <div>
                                 <div class="flex justify-between mb-2">
-                                    <label class="text-sm font-medium text-slate-400">Max Latency (s)</label>
-                                    <span id="max-latency-val" class="text-sm text-blue-400 font-mono">{{ state.latency_range[1] }}s</span>
+                                    <label class="text-sm font-medium text-slate-400">Context Window (chars)</label>
+                                    <span id="context-val" class="text-sm text-blue-400 font-mono">{{ state.context_window }}</span>
                                 </div>
-                                <input type="range" name="latency_max" min="0" max="5" step="0.1" value="{{ state.latency_range[1] }}"
-                                       oninput="document.getElementById('max-latency-val').innerText = this.value + 's'"
+                                <input type="range" name="context_window" min="512" max="32768" step="512" value="{{ state.context_window }}"
+                                       oninput="document.getElementById('context-val').innerText = this.value"
                                        class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
                             </div>
-                        </div>
-
-                        <!-- TPM Limit -->
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <label class="text-sm font-medium text-slate-400">TPM Limit</label>
-                                <span id="tpm-limit-val" class="text-sm text-blue-400 font-mono">{{ state.tpm_limit }}</span>
-                            </div>
-                            <input type="range" name="tpm_limit" min="1000" max="1000000" step="1000" value="{{ state.tpm_limit }}"
-                                   oninput="document.getElementById('tpm-limit-val').innerText = this.value"
-                                   class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
-                        </div>
-
-                        <!-- Context Window -->
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <label class="text-sm font-medium text-slate-400">Context Window (chars)</label>
-                                <span id="context-val" class="text-sm text-blue-400 font-mono">{{ state.context_window }}</span>
-                            </div>
-                            <input type="range" name="context_window" min="512" max="32768" step="512" value="{{ state.context_window }}"
-                                   oninput="document.getElementById('context-val').innerText = this.value"
-                                   class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </section>
 
+                <!-- Emergency Protocols -->
                 <section class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl border-t-4 border-t-red-500">
                     <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-red-400">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 15c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -110,37 +109,41 @@
                     </button>
                 </section>
 
-                <section class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                    <div class="flex justify-between items-center mb-4">
+                <!-- Real LLM Service -->
+                <section class="bg-slate-800 rounded-xl border border-slate-700 shadow-xl overflow-hidden">
+                    <button onclick="document.getElementById('llm-service-content').classList.toggle('hidden')"
+                            class="w-full p-6 flex justify-between items-center hover:bg-slate-700/50 transition-colors">
                         <h2 class="text-xl font-semibold flex items-center gap-2">
                             <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Model States
+                            Real LLM Service
                         </h2>
-                        <button onclick="document.getElementById('model-states-list').classList.toggle('hidden')" class="text-xs text-slate-400 hover:text-blue-400 transition-colors uppercase tracking-wider font-medium">
-                            Toggle
-                        </button>
-                    </div>
-                    <form hx-post="/admin/config" hx-trigger="change" hx-swap="none" class="space-y-3">
-                        <!-- Pass other state variables as hidden inputs so they aren't reset -->
-                        <input type="hidden" name="active_provider" value="{{ state.active_provider }}">
-                        <input type="hidden" name="failure_rate" value="{{ state.failure_rate * 100 }}">
-                        <input type="hidden" name="latency_min" value="{{ state.latency_range[0] }}">
-                        <input type="hidden" name="latency_max" value="{{ state.latency_range[1] }}">
-                        <input type="hidden" name="tpm_limit" value="{{ state.tpm_limit }}">
-                        <input type="hidden" name="context_window" value="{{ state.context_window }}">
-                        <input type="hidden" name="tpm_limit" value="{{ state.tpm_limit }}">
-                        <input type="hidden" name="context_window" value="{{ state.context_window }}">
-
-                        <div id="model-states-list" class="hidden space-y-3">
-                            {% for model in models %}
-                            <div class="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
-                                <span class="text-sm">{{ model }}</span>
-                                <input type="checkbox" name="loaded_models" value="{{ model }}" {{ 'checked' if model in state.loaded_models else '' }}
-                                       class="w-4 h-4 rounded bg-slate-600 text-blue-500 focus:ring-blue-500">
-                            </div>
-                            {% endfor %}
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="llm-service-content" class="p-6 pt-0 space-y-6">
+                        <div id="workflow-panel"
+                             hx-get="/admin/workflow"
+                             hx-trigger="load"
+                             class="space-y-4 mb-8">
+                            <div class="text-sm text-slate-500 italic">Loading verification steps...</div>
                         </div>
-                    </form>
+                        <form hx-post="/admin/config" hx-trigger="change" hx-swap="none" class="space-y-3">
+                            <input type="hidden" name="active_provider" value="{{ state.active_provider }}">
+                            <input type="hidden" name="failure_rate" value="{{ state.failure_rate * 100 }}">
+                            <input type="hidden" name="latency_min" value="{{ state.latency_range[0] }}">
+                            <input type="hidden" name="latency_max" value="{{ state.latency_range[1] }}">
+                            <input type="hidden" name="tpm_limit" value="{{ state.tpm_limit }}">
+                            <input type="hidden" name="context_window" value="{{ state.context_window }}">
+                            <div id="model-states-list" class="hidden space-y-3">
+                                {% for model in models %}
+                                <div class="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                                    <span class="text-sm">{{ model }}</span>
+                                    <input type="checkbox" name="loaded_models" value="{{ model }}" {{ 'checked' if model in state.loaded_models else '' }}
+                                           class="w-4 h-4 rounded bg-slate-600 text-blue-500 focus:ring-blue-500">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </form>
+                    </div>
                 </section>
             </div>
 

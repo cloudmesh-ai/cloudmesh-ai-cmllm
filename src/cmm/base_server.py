@@ -63,6 +63,12 @@ class ServerState:
             "basic_inference": "pending",
             "latency_check": "pending"
         }
+        self.workflow_status: Dict[str, str] = {
+            "ollama_engine": "pending",
+            "model_available": "pending",
+            "basic_inference": "pending",
+            "latency_check": "pending"
+        }
 
     def should_fail(self) -> bool:
         """Check if a request should fail based on the failure rate."""
@@ -72,7 +78,25 @@ class ServerState:
         """Calculate a random delay within the latency range."""
         return random.uniform(*self.latency_range)
 
+async def pull_model(model_name: str):
+    """Triggers a model pull from Ollama and updates workflow status upon completion."""
+    try:
+        log_event(f"Ollama: Starting pull for model {model_name}...")
+        async with httpx.AsyncClient(timeout=None) as client:
+            # Ollama /api/pull is a streaming endpoint
+            async with client.stream("POST", "http://localhost:11434/api/pull", json={"name": model_name}) as response:
+                async for line in response.aiter_lines():
+                    if line:
+                        # We could parse the progress here, but for now just log
+                        pass
+        log_event(f"Ollama: Successfully pulled model {model_name}")
+        state.workflow_status["model_available"] = "success"
+    except Exception as e:
+        log_event(f"Ollama: Failed to pull model {model_name}: {e}")
+        state.workflow_status["model_available"] = "failure"
+
     async def simulate_chaos(self, provider_name: str = "default"):
+
         """Combined method to simulate failure and latency.
         Returns (status_code, message) if it should fail, else None.
         """
@@ -237,22 +261,48 @@ async def openai_stream_generator(provider, text: str, model: str, max_tokens: O
 
     yield "data: [DONE]\n\n"
 
+async def pull_model(model_name: str):
+    """Triggers a model pull from Ollama and updates workflow status upon completion."""
+    try:
+        log_event(f"Ollama: Starting pull for model {model_name}...")
+        async with httpx.AsyncClient(timeout=None) as client:
+            # Ollama /api/pull is a streaming endpoint
+            async with client.stream("POST", "http://localhost:11434/api/pull", json={"name": model_name}) as response:
+                async for line in response.aiter_lines():
+                    if line:
+                        # We could parse the progress here, but for now just log
+                        pass
+        log_event(f"Ollama: Successfully pulled model {model_name}")
+        state.workflow_status["model_available"] = "success"
+    except Exception as e:
+        log_event(f"Ollama: Failed to pull model {model_name}: {e}")
+        state.workflow_status["model_available"] = "failure"
+
 # --- Admin Routes ---
+
 
 @app.get("/admin/workflow", response_class=HTMLResponse)
 async def get_workflow_status():
     """Returns the workflow verification panel as an HTML fragment."""
     steps = [
-        ("ollama_engine", "Ollama Engine", "Verify Ollama server is reachable"),
-        ("model_available", "Model Availability", "Verify phi3 model is pulled"),
-        ("basic_inference", "Basic Inference", "Test simple prompt response"),
-        ("latency_check", "Latency Check", "Verify response timing"),
+        ("ollama_engine", "Install Ollama", "Verify Ollama server is reachable"),
+        ("model_available", "Model Available", "Verify phi3 model is pulled"),
+        ("basic_inference", "Chat working", "Test simple prompt response"),
+        ("latency_check", "Verify latency check", "Verify response timing"),
     ]
 
-    html = '<div id="workflow-panel" class="space-y-4">'
+    html = '''<div id="workflow-panel" class="space-y-4">
+        <div class="flex justify-between items-center mb-4 p-3 bg-blue-600/10 border border-blue-500/30 rounded-lg">
+            <span class="text-sm font-medium text-blue-400">Full Service Setup</span>
+            <button hx-post="/admin/workflow/run-all" hx-target="#workflow-panel"
+                    class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-xs font-bold transition-all active:scale-95">
+                Run All
+            </button>
+        </div>
+    '''
     for sid, name, desc in steps:
         status = state.workflow_status.get(sid, "pending")
-        icon = "⚪" if status == "pending" else "✅" if status == "success" else "❌"
+        icon = "⚪" if status == "pending" else "🟢" if status == "success" else "🔴"
         color = "text-slate-500" if status == "pending" else "text-green-400" if status == "success" else "text-red-400"
 
         html += f'''
@@ -272,7 +322,16 @@ async def get_workflow_status():
 
 @app.post("/admin/workflow/run/{step_id}", response_class=HTMLResponse)
 async def run_workflow_step(step_id: str):
-    """Executes a specific verification step."""
+    """Executes a specific verification step and resets subsequent steps."""
+    # Define step order for dependency resets
+    steps_order = ["ollama_engine", "model_available", "basic_inference", "latency_check"]
+
+    # Reset all subsequent steps to pending
+    if step_id in steps_order:
+        idx = steps_order.index(step_id)
+        for subsequent_step in steps_order[idx + 1:]:
+            state.workflow_status[subsequent_step] = "pending"
+
     success = False
     try:
         if step_id == "ollama_engine":
@@ -285,6 +344,14 @@ async def run_workflow_step(step_id: str):
                 resp = await client.get("http://localhost:11434/api/tags", timeout=2.0)
                 data = resp.json()
                 success = any(m["name"].startswith("phi3") for m in data.get("models", []))
+
+                if not success:
+                    log_event("Model phi3 not found. Triggering pull...")
+                    # Trigger Ollama pull in the background
+                    asyncio.create_task(pull_model("phi3"))
+                    state.workflow_status[step_id] = "pulling"
+                    return await get_workflow_status()
+
 
         elif step_id == "basic_inference":
             provider = get_provider("ollama", {"mode": "real"})
@@ -492,6 +559,11 @@ async def chat_send(message: str = Form(...)):
         <div class="flex gap-4 mb-6">
             <div class="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center text-xs font-bold text-slate-500">AI</div>
             <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm max-w-[80%] text-sm leading-relaxed text-slate-700">
+                <div class="flex justify-between items-center mb-2 gap-4">
+                    <div id="model-badge" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        Detecting model...
+                    </div>
+                </div>
                 <div id="bot-response" data-message="{message}">
                     Waiting for response...
                 </div>
@@ -500,14 +572,29 @@ async def chat_send(message: str = Form(...)):
     """)
 
 @app.get("/chat/stream")
-async def chat_stream(message: str):
+async def chat_stream(message: str, model: Optional[str] = None):
     """SSE endpoint for streaming the model response."""
-    # We use the active provider from state
-    provider = get_provider(state.active_provider, {})
-    model = f"{state.active_provider}-mock" # Simplified
+    if model:
+        provider_name = model.split('-')[0] if '-' in model else "ollama"
+        provider = get_provider(provider_name, {})
+
+        if "-real" in model:
+            provider.config["mode"] = "real"
+            actual_model = model.replace("-real", "")
+            if "-" in actual_model:
+                actual_model = actual_model.split("-")[1]
+        else:
+            provider.config["mode"] = "mock"
+            actual_model = model.split('-')[1] if '-' in model else model
+    else:
+        # Fallback to active provider and mock mode
+        provider_name = state.active_provider
+        provider = get_provider(provider_name, {})
+        provider.config["mode"] = "mock"
+        actual_model = f"{provider_name}-mock"
 
     async def event_generator():
-        async for chunk in provider.stream_prompt(message, model):
+        async for chunk in provider.stream_prompt(message, actual_model):
             text = chunk[0] if isinstance(chunk, tuple) else chunk
             # Send as JSON to provide both views
             yield f"data: {json.dumps({'raw': str(chunk), 'text': text})}\n\n"
@@ -518,12 +605,20 @@ async def chat_stream(message: str):
 
 @app.get("/v1/models")
 async def list_models():
-    """Lists available mock models."""
+    """Lists available mock and real models. Real models are only shown if verified."""
     all_models = []
     for p_name in list_available_providers():
         provider = get_provider(p_name, {})
         for m in provider.list_models():
-            all_models.append({"id": f"{p_name}-{m}", "owned_by": "cloudmesh-ai"})
+            # Standard mock model - always available
+            all_models.append({"id": f"{p_name}-{m}", "owned_by": "cloudmesh-ai", "description": "Simulated response"})
+
+            # Real model variant - only available if verified
+            if p_name == "ollama" and state.workflow_status.get("latency_check") == "success":
+                all_models.append({"id": f"{p_name}-{m}-real", "owned_by": "cloudmesh-ai", "description": "Real local LLM"})
+            elif p_name != "ollama":
+                # Other real providers might not have checks yet, but for now we only have Ollama checks
+                all_models.append({"id": f"{p_name}-{m}-real", "owned_by": "cloudmesh-ai", "description": "Real local LLM"})
 
     return {"object": "list", "data": all_models}
 
@@ -549,6 +644,16 @@ async def chat_completions(request: ChatCompletionRequest):
 
         # Token counting
         prompt_tokens = provider.tokenize(user_text)
+
+        # Handle "real" model override
+        if "-real" in model_id:
+            provider.config["mode"] = "real"
+            actual_model = model_id.replace("-real", "")
+            if "-" in actual_model:
+                actual_model = actual_model.split("-")[1]
+        else:
+            provider.config["mode"] = "mock"
+
 
         # Context Window Enforcement (Prompt only for streaming, prompt+response for non-streaming)
         if prompt_tokens > state.context_window:
