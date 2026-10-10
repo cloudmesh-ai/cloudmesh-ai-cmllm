@@ -1,16 +1,16 @@
-# Cloudmesh AI CMLLM (Containerized Model LLM Orchestrator)
+# Cloudmesh AI CMLLM (Mock LLM Provider)
 
-`cloudmesh-ai-cmllm` provides a unified orchestration interface for containerized AI workloads and inference runtimes. Integrated as a subcommand of the `cmx` CLI, it simplifies the deployment and management of LLMs across diverse environments, from local workstations to High-Performance Computing (HPC) clusters.
+`cloudmesh-ai-cmllm` is a lightweight, OpenAI-compatible mock LLM service designed for developers and testers. It allows you to simulate various LLM providers (like Ollama and vLLM) without needing actual GPU infrastructure or expensive API keys, making it ideal for CI/CD pipelines, local development, and architectural prototyping.
 
 ## Key Features
 
-- **Unified CLI UX**: Manage container lifecycles using a consistent namespace (`cmx container start|stop|status`), eliminating the need to switch between native `docker` or `apptainer` commands.
-- **Multi-Runtime Abstraction**: 
-    - **Docker**: Optimized for local development and cloud instances.
-    - **Apptainer**: Tailored for HPC environments (e.g., Rivanna) with native support for rootless execution and NVIDIA GPU pass-through (`--nv`).
-- **AI-Centric Configuration**: Centralized management of GPU allocation, port mappings for API endpoints, and volume mounts for model weights and datasets.
-- **Hybrid Infrastructure Target**: Run the exact same AI workflow locally in a container or on a remote HPC cluster by simply swapping the `--runtime` flag.
-- **Simplified GPU Pass-through**: Intelligent handling of GPU device allocation (e.g., `all`, `0`, `1,2`) across different container backends.
+- **OpenAI-Compatible API**: Implements the standard `/v1/chat/completions`, `/v1/completions`, and `/v1/embeddings` endpoints, allowing you to swap real LLM endpoints for this mock server with zero code changes.
+- **Multi-Provider Simulation**: Switch between different mock provider behaviors (e.g., Ollama vs. vLLM) to test how your application handles different model responses and availability.
+- **Zero Infrastructure Required**: No GPUs, no Docker, and no API keys needed. The mock server runs as a simple Python process.
+- **Developer-Friendly Tools**:
+    - **Mock Server**: A FastAPI-powered server with built-in Swagger documentation (`/docs`).
+    - **CLI Tool**: A dedicated `cmllm` command for quick prompting and provider management.
+- **Observability Mocks**: Includes mock `/health` and `/metrics` endpoints to test monitoring and orchestration (e.g., Kubernetes probes).
 
 ## Quick Start
 
@@ -22,32 +22,45 @@ cd cloudmesh-ai-cmllm
 pip install -e .
 ```
 
-### 2. Basic Usage
+### 2. Using the Mock Server
 
-#### Start an AI Inference Container (e.g., vLLM)
+Start the server to expose an OpenAI-compatible API:
 ```bash
-# Start a vLLM container using Docker with GPU support
-cmx container start --image vllm/vllm-openai:latest --gpus all -p 8000:8000
+cmllm serve --port 8000
+```
+The server is now available at `http://localhost:8000`. You can explore the API via the built-in docs at `http://localhost:8000/docs`.
 
-# Start the same workload on an HPC cluster using Apptainer
-cmx container start --image vllm/vllm-openai:latest --runtime apptainer -v /home/user/weights:/weights
+**Example API call:**
+```bash
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "ollama-llama3",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
 ```
 
-#### Manage Container Lifecycle
-```bash
-# List active cmx-managed containers
-cmx container status
+### 3. Using the CLI
 
-# Stop and remove a container
-cmx container stop cmx-service
+The `cmllm` command allows you to interact with the mock providers directly from your terminal:
+
+```bash
+# Send a prompt using the default provider
+cmllm prompt "What is Cloudmesh AI?"
+
+# Switch the active provider to vLLM
+cmllm provider set vllm
+
+# List available models for the active provider
+cmllm list
 ```
 
-## Runtime Support Matrix
+## Mock Provider Matrix
 
-| Runtime | Target Environment | GPU Support | Volume Binding | Status |
-| :--- | :--- | :---: | :---: | :--- |
-| **Docker** | Workstation / Cloud | ✅ (`--gpus`) | ✅ (`-v`) | 🟢 |
-| **Apptainer** | HPC Clusters | ✅ (`--nv`) | ✅ (`--bind`) | 🟢 |
+| Provider | Simulated Behavior | Key Models | Implementation |
+| :--- | :--- | :--- | :--- |
+| **Ollama** | Local-first LLM feel | `llama3`, `mistral`, `phi3` | ✅ Mocked |
+| **vLLM** | High-throughput API feel | `gpt-4-mock`, `mixtral` | ✅ Mocked |
 
 ## Documentation
 
@@ -61,12 +74,12 @@ Detailed guides are available in the `/docs` folder:
 
 ## Testing
 
-The project ensures stability across different runtimes using a tiered testing strategy:
+The project ensures consistency across mock providers using a tiered testing strategy:
 
-- **Unit Tests**: Verify CLI parsing and command generation logic using mocks.
-- **Integration Tests**: End-to-end validation of container startup and status checks on systems with Docker/Apptainer installed.
-- **Compliance Suite**: Ensures that both Docker and Apptainer backends provide a consistent interface for the user.
+- **Unit Tests**: Verify that each provider returns the expected mock format.
+- **API Tests**: Validate the FastAPI routes against the OpenAI API specification.
+- **Compliance Suite**: Ensures all mock providers implement the same base interface.
 
 ## Contributing
 
-We welcome contributions to expand the supported runtimes and AI orchestration capabilities. Please see [Contributing](docs/contributing.md) for guidelines.
+We welcome contributions to add new mock providers or expand the simulated API responses. Please see [Contributing](docs/contributing.md) for guidelines.

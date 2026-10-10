@@ -1,23 +1,39 @@
 # CLI Reference
 
-The Cloudmesh AI CMLLM tool is accessed via the `cmx llm` command.
+The Cloudmesh AI CMLLM tool is accessed via the `cmllm` command. It serves as a developer's interface to manage and test mock LLM providers.
 
 ## Command Summary
 
 | Command | Description |
 | :--- | :--- |
-| `cmx llm provider set <provider>` | Set the active LLM provider |
-| `cmx llm provider get` | Show the current active provider |
-| `cmx llm prompt "<text>"` | Send a prompt to the active model |
-| `cmx llm list` | List available models for the current provider |
-| `cmx llm model set <model>` | Change the active model |
-| `cmx llm -i` | Enter interactive LLM shell |
+| `cmllm serve` | Start the OpenAI-compatible mock API server |
+| `cmllm prompt "<text>"` | Send a prompt to the active mock provider |
+| `cmllm list` | List available models for the active provider |
+| `cmllm provider set <name>` | Set the active mock provider (e.g., `ollama`, `vllm`) |
+| `cmllm provider get` | Show the current active mock provider |
 
 ## Example Usage
-```bash
-# Prompt the default model
-cmx llm prompt "What is Cloudmesh AI?"
 
-# Prompt using a different provider
-cmx llm prompt "Hello!" --provider anthropic
+### Starting the Mock Server
+```bash
+# Start the server on default port 8000
+cmllm serve
+
+# Start the server on a custom port
+cmllm serve --port 9000
+```
+
+### Prompting and Provider Management
+```bash
+# Prompt the default mock provider
+cmllm prompt "Hello, mock LLM!"
+
+# Switch to the vLLM mock provider
+cmllm provider set vllm
+
+# List all available mock models for vLLM
+cmllm list
+
+# Override provider for a single prompt
+cmllm prompt "Test this!" --provider ollama
 ```
