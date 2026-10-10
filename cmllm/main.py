@@ -1,18 +1,18 @@
 import click
 import yaml
 import os
+import logging
 from typing import Dict, Any
 from .providers import get_provider, list_available_providers
 from .base_server import start_server
+from .logger import setup_logging, get_logger
 
-CONFIG_PATH = os.path.expanduser("~/.config/cloudmesh/llms-mock.yaml")
-
-
+logger = get_logger("cmllm.cli")
 CONFIG_PATH = os.path.expanduser("~/.config/cloudmesh/llms-mock.yaml")
 
 def load_config() -> Dict[str, Any]:
     if not os.path.exists(CONFIG_PATH):
-        # Return a default config if none exists
+        logger.info(f"Configuration file not found at {CONFIG_PATH}. Using defaults.")
         return {
             "active_provider": "ollama",
             "providers": {
@@ -20,18 +20,25 @@ def load_config() -> Dict[str, Any]:
                 "vllm": {"default_model": "gpt-4-mock"},
             }
         }
-    with open(CONFIG_PATH, 'r') as f:
-        return yaml.safe_load(f) or {}
+    try:
+        with open(CONFIG_PATH, 'r') as f:
+            return yaml.safe_load(f) or {}
+    except Exception as e:
+        logger.error(f"Error loading config file: {e}")
+        return {}
 
 def save_config(config: Dict[str, Any]):
     os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
     with open(CONFIG_PATH, 'w') as f:
         yaml.dump(config, f)
 
-@click.group()
-def cli():
+@cli.group()
+@click.option('--debug', is_flag=True, help='Enable debug logging.')
+@click.pass_context
+def cli(ctx, debug):
     """Cloudmesh AI CMLLM CLI - Manage and prompt mock LLM providers."""
-    pass
+    setup_logging(debug)
+    ctx.ensure_object(dict)
 
 @cli.group()
 def provider():
@@ -90,6 +97,29 @@ def list_models(provider):
             click.echo(f" - {m}")
     except Exception as e:
         click.secho(f"Error: {e}", fg='red')
+
+@cli.command('init')
+def config_init():
+    """Initialize the default configuration file."""
+    default_config = {
+        "active_provider": "ollama",
+        "providers": {
+            "ollama": {"default_model": "llama3"},
+            "vllm": {"default_model": "gpt-4-mock"},
+        }
+    }
+
+    try:
+        os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
+        if os.path.exists(CONFIG_PATH):
+            click.echo(f"Configuration file already exists at {CONFIG_PATH}. Skipping.")
+        else:
+            with open(CONFIG_PATH, 'w') as f:
+                yaml.dump(default_config, f)
+            click.secho(f"Initialized default configuration at {CONFIG_PATH}", fg='green')
+    except Exception as e:
+        logger.error(f"Failed to initialize config: {e}")
+        click.secho(f"Error initializing config: {e}", fg='red')
 
 @cli.command('serve')
 @click.option('--host', default='0.0.0.0', help='Host to bind the server to.')

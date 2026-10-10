@@ -7,6 +7,7 @@ The Cloudmesh AI CMLLM tool is accessed via the `cmllm` command. It serves as a 
 | Command | Description |
 | :--- | :--- |
 | `cmllm serve` | Start the OpenAI-compatible mock API server |
+| `cmllm init` | Initialize the default configuration file |
 | `cmllm prompt "<text>"` | Send a prompt to the active mock provider |
 | `cmllm list` | List available models for the active provider |
 | `cmllm provider set <name>` | Set the active mock provider (e.g., `ollama`, `vllm`) |
