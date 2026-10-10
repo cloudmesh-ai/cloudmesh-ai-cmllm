@@ -426,11 +426,14 @@ async def update_config(
 
 @app.post("/admin/panic")
 async def toggle_panic():
-    """Toggles the Meltdown mode."""
+    """Toggles the Meltdown mode and returns the updated status indicator."""
     state.meltdown_mode = not state.meltdown_mode
     mode = "ACTIVATED" if state.meltdown_mode else "DEACTIVATED"
     log_event(f"PANIC BUTTON: Meltdown mode {mode}")
-    return HTMLResponse(content=f"Meltdown mode {mode}")
+
+    color_class = "bg-green-500 border-green-600 shadow-[0_0_10px_rgba(34,197,94,0.5)]" if state.meltdown_mode else "bg-white border-slate-400"
+
+    return HTMLResponse(content=f'<div id="meltdown-status" class="w-12 h-12 rounded-lg border-2 border-slate-600 transition-colors duration-500 {color_class}"></div>')
 
 @app.get("/admin/scenarios", response_class=HTMLResponse)
 async def list_scenarios():
