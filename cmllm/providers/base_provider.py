@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import List, Dict, Any, AsyncGenerator
 
 class BaseLLMProvider(ABC):
     """Abstract base class for LLM providers."""
@@ -21,3 +21,18 @@ class BaseLLMProvider(ABC):
     def get_name(self) -> str:
         """Return the provider name."""
         pass
+
+    async def stream_prompt(self, text: str, model: str = None) -> AsyncGenerator[str, None]:
+        """
+        Async generator that yields chunks of the response.
+        Defaults to chunking the static prompt response.
+        """
+        response = self.prompt(text, model)
+        # Simulate tokenization by splitting on spaces
+        import asyncio
+        import random
+
+        tokens = response.split(" ")
+        for token in tokens:
+            yield token + " "
+            await asyncio.sleep(random.uniform(0.01, 0.1))
