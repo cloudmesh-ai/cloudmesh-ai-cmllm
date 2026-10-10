@@ -10,7 +10,12 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
     <div class="max-w-6xl mx-auto p-6">
         <header class="mb-8 border-b border-slate-700 pb-4 flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-blue-400">Cloudmesh cmm <span class="text-slate-400 font-light">Admin Control Room</span></h1>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                    <img src="/static/logo-white.png" class="w-5 h-5 object-contain" alt="CM">
+                </div>
+                <h1 class="text-3xl font-bold text-blue-400">Cloudmesh cmm <span class="text-slate-400 font-light">Admin Control Room</span></h1>
+            </div>
             <div class="text-xs text-slate-500 uppercase tracking-widest">Simulation Environment</div>
         </header>
 
@@ -106,10 +111,15 @@
                 </section>
 
                 <section class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Model States
-                    </h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Model States
+                        </h2>
+                        <button onclick="document.getElementById('model-states-list').classList.toggle('hidden')" class="text-xs text-slate-400 hover:text-blue-400 transition-colors uppercase tracking-wider font-medium">
+                            Toggle
+                        </button>
+                    </div>
                     <form hx-post="/admin/config" hx-trigger="change" hx-swap="none" class="space-y-3">
                         <!-- Pass other state variables as hidden inputs so they aren't reset -->
                         <input type="hidden" name="active_provider" value="{{ state.active_provider }}">
@@ -121,13 +131,15 @@
                         <input type="hidden" name="tpm_limit" value="{{ state.tpm_limit }}">
                         <input type="hidden" name="context_window" value="{{ state.context_window }}">
 
-                        {% for model in models %}
-                        <div class="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
-                            <span class="text-sm">{{ model }}</span>
-                            <input type="checkbox" name="loaded_models" value="{{ model }}" {{ 'checked' if model in state.loaded_models else '' }}
-                                   class="w-4 h-4 rounded bg-slate-600 text-blue-500 focus:ring-blue-500">
+                        <div id="model-states-list" class="hidden space-y-3">
+                            {% for model in models %}
+                            <div class="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                                <span class="text-sm">{{ model }}</span>
+                                <input type="checkbox" name="loaded_models" value="{{ model }}" {{ 'checked' if model in state.loaded_models else '' }}
+                                       class="w-4 h-4 rounded bg-slate-600 text-blue-500 focus:ring-blue-500">
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </form>
                 </section>
             </div>
