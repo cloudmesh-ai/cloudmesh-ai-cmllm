@@ -1,11 +1,11 @@
 from .base_provider import BaseLLMProvider
 from .ollama_provider import OllamaProvider
-from .vllm_provider import VllmProvider
+from .vllm_provider import VLLMProvider
 from typing import Dict, Any, Type
 
 _PROVIDERS: Dict[str, Type[BaseLLMProvider]] = {
     "ollama": OllamaProvider,
-    "vllm": VllmProvider,
+    "vllm": VLLMProvider,
 }
 
 def get_provider(name: str, config: Dict[str, Any]) -> BaseLLMProvider:
