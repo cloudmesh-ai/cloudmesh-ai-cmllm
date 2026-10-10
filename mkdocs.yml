@@ -1,4 +1,4 @@
-site_name: Cloudmesh AI CMLLM Documentation
+site_name: Cloudmesh AI CMM Documentation
 theme:
   name: material
 nav:

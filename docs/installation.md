@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide describes how to install and run the Cloudmesh AI CMLLM mock service.
+This guide describes how to install and run the Cloudmesh AI cmm mock service.
 
 ## Prerequisites
 - Python 3.10 or newer
@@ -10,8 +10,8 @@ This guide describes how to install and run the Cloudmesh AI CMLLM mock service.
 
 ### From Source
 ```bash
-git clone https://github.com/cloudmesh-ai/cloudmesh-ai-cmllm.git
-cd cloudmesh-ai-cmllm
+git clone https://github.com/cloudmesh-ai/cloudmesh-ai-cmm.git
+cd cloudmesh-ai-cmm
 pip install -e .
 ```
 
@@ -19,14 +19,14 @@ pip install -e .
 
 The mock server provides an OpenAI-compatible API. To start it:
 ```bash
-cmllm serve
+cmm serve
 ```
-Once started, the server will be available at `http://localhost:8000`. 
+Once started, the server will be available at `http://localhost:8888`. 
 
 ### Testing the Server
 You can test the server using `curl`:
 ```bash
-curl http://localhost:8000/v1/chat/completions \
+curl http://localhost:8888/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "ollama-llama3",
@@ -36,4 +36,4 @@ curl http://localhost:8000/v1/chat/completions \
 
 ### Interactive API Docs
 FastAPI automatically generates interactive documentation. Visit:
-`http://localhost:8000/docs`
+`http://localhost:8888/docs`

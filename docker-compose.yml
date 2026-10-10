@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  cmm-server:
+    build: .
+    container_name: cmm-server
+    ports:
+      - "127.0.0.1:8888:8888"
+    volumes:
+      - ~/.config/cloudmesh/:/home/appuser/.config/cloudmesh/
+    restart: unless-stopped

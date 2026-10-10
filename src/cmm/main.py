@@ -6,37 +6,16 @@ from typing import Dict, Any
 from .providers import get_provider, list_available_providers
 from .base_server import start_server
 from .logger import setup_logging, get_logger
+from .utils import kill_process_on_port
+from .config import load_config, save_config, CONFIG_PATH
 
-logger = get_logger("cmllm.cli")
-CONFIG_PATH = os.path.expanduser("~/.config/cloudmesh/llms-mock.yaml")
+logger = get_logger("cmm.cli")
 
-def load_config() -> Dict[str, Any]:
-    if not os.path.exists(CONFIG_PATH):
-        logger.info(f"Configuration file not found at {CONFIG_PATH}. Using defaults.")
-        return {
-            "active_provider": "ollama",
-            "providers": {
-                "ollama": {"default_model": "llama3"},
-                "vllm": {"default_model": "gpt-4-mock"},
-            }
-        }
-    try:
-        with open(CONFIG_PATH, 'r') as f:
-            return yaml.safe_load(f) or {}
-    except Exception as e:
-        logger.error(f"Error loading config file: {e}")
-        return {}
-
-def save_config(config: Dict[str, Any]):
-    os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
-    with open(CONFIG_PATH, 'w') as f:
-        yaml.dump(config, f)
-
-@cli.group()
+@click.group()
 @click.option('--debug', is_flag=True, help='Enable debug logging.')
 @click.pass_context
 def cli(ctx, debug):
-    """Cloudmesh AI CMLLM CLI - Manage and prompt mock LLM providers."""
+    """Cloudmesh AI CMM CLI - Manage and prompt mock LLM providers."""
     setup_logging(debug)
     ctx.ensure_object(dict)
 
@@ -122,12 +101,17 @@ def config_init():
         click.secho(f"Error initializing config: {e}", fg='red')
 
 @cli.command('serve')
-@click.option('--host', default='0.0.0.0', help='Host to bind the server to.')
-@click.option('--port', default=8000, type=int, help='Port to bind the server to.')
-def serve(host, port):
+@click.option('--host', default='127.0.0.1', help='Host to bind the server to.')
+@click.option('--port', default=8888, type=int, help='Port to bind the server to.')
+@click.option('--kill-port', is_flag=True, default=True, help='Kill any process using the port before starting.')
+def serve(host, port, kill_port):
     """Start the OpenAI-compatible mock LLM server."""
-    click.secho(f"Starting CMLLM Mock Server on http://{host}:{port}", fg='cyan')
-    click.echo("Documentation available at http://localhost:8000/docs")
+    if kill_port:
+        kill_process_on_port(port)
+    click.secho(f"Starting CMM Mock Server on http://{host}:{port}", fg='cyan')
+    click.echo(f"User Chat UI:    http://{host}:{port}/chat")
+    click.echo(f"Admin Dashboard: http://{host}:{port}/admin")
+    click.echo(f"API Documentation: http://{host}:{port}/docs")
     start_server(host, port)
 
 if __name__ == '__main__':

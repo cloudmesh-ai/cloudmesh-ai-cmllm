@@ -2,7 +2,7 @@ import logging
 import sys
 
 def setup_logging(debug: bool = False):
-    """Configures the global logging system for CMLLM."""
+    """Configures the global logging system for CMM."""
     level = logging.DEBUG if debug else logging.INFO
 
     logging.basicConfig(

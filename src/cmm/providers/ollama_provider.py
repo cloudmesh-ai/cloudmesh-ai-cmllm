@@ -11,6 +11,6 @@ class OllamaProvider(BaseLLMProvider):
     def list_models(self) -> List[str]:
         return ["llama3", "mistral", "phi3", "gemma"]
 
-    def prompt(self, text: str, model: str = None) -> str:
+    def _generate_response(self, text: str, model: str = None) -> str:
         model = model or self.config.get("default_model", "llama3")
         return get_scenario_response(text, self.get_name(), model)
