@@ -3,6 +3,10 @@ import yaml
 import os
 from typing import Dict, Any
 from .providers import get_provider, list_available_providers
+from .server import start_server
+
+CONFIG_PATH = os.path.expanduser("~/.config/cloudmesh/llms.yaml")
+
 
 CONFIG_PATH = os.path.expanduser("~/.config/cloudmesh/llms.yaml")
 
@@ -86,6 +90,15 @@ def list_models(provider):
             click.echo(f" - {m}")
     except Exception as e:
         click.secho(f"Error: {e}", fg='red')
+
+@cli.command('serve')
+@click.option('--host', default='0.0.0.0', help='Host to bind the server to.')
+@click.option('--port', default=8000, type=int, help='Port to bind the server to.')
+def serve(host, port):
+    """Start the OpenAI-compatible mock LLM server."""
+    click.secho(f"Starting CMLLM Mock Server on http://{host}:{port}", fg='cyan')
+    click.echo("Documentation available at http://localhost:8000/docs")
+    start_server(host, port)
 
 if __name__ == '__main__':
     cli()
