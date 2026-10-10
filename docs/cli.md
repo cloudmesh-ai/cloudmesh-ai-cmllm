@@ -1,6 +1,6 @@
 # CLI Reference
 
-The Cloudmesh AI cmm tool is accessed via the `cmm` command. It serves as a developer's interface to manage and test mock LLM providers.
+The Cloudmesh AI llm-mock tool is accessed via the `cmm` command. It serves as a developer's interface to manage and test mock LLM providers.
 
 ## Command Summary
 

@@ -14,6 +14,6 @@ class AnthropicProvider(BaseLLMProvider):
     def list_models(self) -> List[str]:
         return ["claude-3-opus", "claude-3-sonnet", "claude-3-haiku"]
 
-    def _generate_response(self, text: str, model: str = None) -> str:
+    async def _generate_response(self, text: str, model: str = None) -> str:
         model = model or self.config.get("default_model", "claude-3-sonnet")
         return get_scenario_response(text, self.get_name(), model)

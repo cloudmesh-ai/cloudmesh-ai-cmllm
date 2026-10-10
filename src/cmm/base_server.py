@@ -10,6 +10,7 @@ import time
 import json
 import asyncio
 import logging
+import httpx
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
@@ -56,6 +57,12 @@ class ServerState:
         self.meltdown_start_time: Optional[float] = None
         self.last_tpm_reset: float = time.time()
         self.session_histories: Dict[str, List[ChatMessage]] = {}
+        self.workflow_status: Dict[str, str] = {
+            "ollama_engine": "pending",
+            "model_available": "pending",
+            "basic_inference": "pending",
+            "latency_check": "pending"
+        }
 
     def should_fail(self) -> bool:
         """Check if a request should fail based on the failure rate."""
@@ -231,6 +238,85 @@ async def openai_stream_generator(provider, text: str, model: str, max_tokens: O
     yield "data: [DONE]\n\n"
 
 # --- Admin Routes ---
+
+@app.get("/admin/workflow", response_class=HTMLResponse)
+async def get_workflow_status():
+    """Returns the workflow verification panel as an HTML fragment."""
+    steps = [
+        ("ollama_engine", "Ollama Engine", "Verify Ollama server is reachable"),
+        ("model_available", "Model Availability", "Verify phi3 model is pulled"),
+        ("basic_inference", "Basic Inference", "Test simple prompt response"),
+        ("latency_check", "Latency Check", "Verify response timing"),
+    ]
+
+    html = '<div id="workflow-panel" class="space-y-4">'
+    for sid, name, desc in steps:
+        status = state.workflow_status.get(sid, "pending")
+        icon = "⚪" if status == "pending" else "✅" if status == "success" else "❌"
+        color = "text-slate-500" if status == "pending" else "text-green-400" if status == "success" else "text-red-400"
+
+        html += f'''
+            <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg border border-slate-700 group hover:border-blue-500/50 transition-all">
+                <div class="flex items-center gap-3 cursor-pointer" hx-post="/admin/workflow/run/{sid}" hx-target="#workflow-panel">
+                    <span class="{color} font-bold text-lg">{icon}</span>
+                    <div>
+                        <div class="text-sm font-semibold">{name}</div>
+                        <div class="text-xs text-slate-500">{desc}</div>
+                    </div>
+                </div>
+                <div class="text-xs font-mono text-slate-600 uppercase">{status}</div>
+            </div>
+        '''
+    html += '</div>'
+    return HTMLResponse(content=html)
+
+@app.post("/admin/workflow/run/{step_id}", response_class=HTMLResponse)
+async def run_workflow_step(step_id: str):
+    """Executes a specific verification step."""
+    success = False
+    try:
+        if step_id == "ollama_engine":
+            async with httpx.AsyncClient() as client:
+                resp = await client.get("http://localhost:11434/api/tags", timeout=2.0)
+                success = resp.status_code == 200
+
+        elif step_id == "model_available":
+            async with httpx.AsyncClient() as client:
+                resp = await client.get("http://localhost:11434/api/tags", timeout=2.0)
+                data = resp.json()
+                success = any(m["name"].startswith("phi3") for m in data.get("models", []))
+
+        elif step_id == "basic_inference":
+            provider = get_provider("ollama", {"mode": "real"})
+            resp, _ = await provider.prompt("Hi", model="phi3")
+            success = len(resp) > 0
+
+        elif step_id == "latency_check":
+            start = time.time()
+            provider = get_provider("ollama", {"mode": "real"})
+            await provider.prompt("Hi", model="phi3")
+            success = (time.time() - start) < 10.0 # Reasonable timeout for a local LLM
+
+        else:
+            success = False
+    except Exception as e:
+        log_event(f"Workflow step {step_id} failed: {e}")
+        success = False
+
+    state.workflow_status[step_id] = "success" if success else "failure"
+    log_event(f"Workflow step {step_id}: {'SUCCESS' if success else 'FAILURE'}")
+
+    # Return the updated panel
+    return await get_workflow_status()
+
+@app.post("/admin/workflow/run-all", response_class=HTMLResponse)
+async def run_all_workflow():
+    """Runs all verification steps sequentially."""
+    steps = ["ollama_engine", "model_available", "basic_inference", "latency_check"]
+    for sid in steps:
+        await run_workflow_step(sid)
+
+    return await get_workflow_status()
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_dashboard(request: Request):
@@ -480,7 +566,7 @@ async def chat_completions(request: ChatCompletionRequest):
                 media_type="text/event-stream"
             )
 
-        response_text, finish_reason = provider.prompt(user_text, model=actual_model, max_tokens=request.max_tokens)
+        response_text, finish_reason = await provider.prompt(user_text, model=actual_model, max_tokens=request.max_tokens)
         completion_tokens = provider.tokenize(response_text)
         total_tokens = prompt_tokens + completion_tokens
 
@@ -525,7 +611,7 @@ async def completions(request: CompletionRequest):
         except HTTPException as e:
             return provider_error(e.status_code, e.detail, provider_name)
 
-        response_text, finish_reason = provider.prompt(prompt_text, model=actual_model)
+        response_text, finish_reason = await provider.prompt(prompt_text, model=actual_model)
 
         data = CompletionResponse(
             id=f"cmpx-{random.randint(1000, 9999)}",

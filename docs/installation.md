@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide describes how to install and run the Cloudmesh AI cmm mock service.
+This guide describes how to install and run the Cloudmesh AI llm-mock service.
 
 ## Prerequisites
 - Python 3.10 or newer

@@ -1,7 +1,7 @@
 # Design Document: cmm Simulation Interfaces
 
 ## 1. Overview
-To transform the Cloudmesh AI cmm mock server into a full simulation environment, we are implementing two distinct graphical user interfaces (GUIs): an **Admin GUI** for server management and a **User GUI** for simulating the end-user chat experience.
+To transform the Cloudmesh AI llm-mock server into a full simulation environment, we are implementing two distinct graphical user interfaces (GUIs): an **Admin GUI** for server management and a **User GUI** for simulating the end-user chat experience.
 
 ## 2. Technology Stack (The "Lean Stack")
 To maintain the project's portability and avoid a complex frontend build pipeline, we use the following open-source tools:

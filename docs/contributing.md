@@ -1,6 +1,6 @@
 # Contributing Guide
 
-We welcome contributions to make Cloudmesh AI cmm a better tool for LLM developers!
+We welcome contributions to make Cloudmesh AI llm-mock a better tool for LLM developers!
 
 ## Adding a New Mock Provider
 

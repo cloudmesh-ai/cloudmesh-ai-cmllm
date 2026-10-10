@@ -14,6 +14,6 @@ class AzureOpenAIProvider(BaseLLMProvider):
     def list_models(self) -> List[str]:
         return ["gpt-4", "gpt-35-turbo", "gpt-4-turbo"]
 
-    def _generate_response(self, text: str, model: str = None) -> str:
+    async def _generate_response(self, text: str, model: str = None) -> str:
         model = model or self.config.get("default_model", "gpt-4")
         return get_scenario_response(text, self.get_name(), model)

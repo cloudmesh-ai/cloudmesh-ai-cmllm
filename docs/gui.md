@@ -1,6 +1,6 @@
 # GUI Guide
 
-Cloudmesh AI cmm provides two distinct web interfaces to make interacting with and managing the mock server intuitive and efficient.
+Cloudmesh AI llm-mock provides two distinct web interfaces to make interacting with and managing the mock server intuitive and efficient.
 
 ## 1. User Chat Interface (`/chat`)
 
