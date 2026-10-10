@@ -3,11 +3,11 @@
 ## Phase 1: The Stability Foundation (High Priority)
 Goal: Transform the project from a prototype into a stable, maintainable tool.
 
-- [ ] API Contract Testing: Implement a test suite using fastapi.testclient to verify that all endpoints strictly follow the OpenAI API specification.
-- [ ] CLI Testing: Add click.testing.CliRunner tests to ensure cmllm prompt, provider set, and serve commands work across different OS environments.
-- [ ] CI/CD Repair: Update .github/workflows to use pyproject.toml (instead of requirements.txt) so that the project is automatically tested on every PR.
-- [ ] Smart Config Init: Add a cmllm config init command to automatically generate a default llms-mock.yaml file for new users.
-- [ ] Logging System: Replace click.echo in the server and providers with a proper logging module to allow for --debug levels and log files.
+- [x] API Contract Testing: Implement a test suite using fastapi.testclient to verify that all endpoints strictly follow the OpenAI API specification.
+- [x] CLI Testing: Add click.testing.CliRunner tests to ensure cmllm prompt, provider set, and serve commands work across different OS environments.
+- [x] CI/CD Repair: Update .github/workflows to use pyproject.toml (instead of requirements.txt) so that the project is automatically tested on every PR.
+- [x] Smart Config Init: Add a cmllm config init command to automatically generate a default llms-mock.yaml file for new users.
+- [x] Logging System: Replace click.echo in the server and providers with a proper logging module to allow for --debug levels and log files.
 
 ## Phase 2: The Realism Engine (Medium Priority)
 Goal: Make the mock server behave like a real, unpredictable production LLM API.

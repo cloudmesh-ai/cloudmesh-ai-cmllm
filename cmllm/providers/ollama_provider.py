@@ -1,5 +1,6 @@
 from .base_provider import BaseLLMProvider
 from typing import List, Dict, Any
+from ..scenarios import get_scenario_response
 
 class OllamaProvider(BaseLLMProvider):
     """Mock implementation of an Ollama provider."""
@@ -12,4 +13,4 @@ class OllamaProvider(BaseLLMProvider):
 
     def prompt(self, text: str, model: str = None) -> str:
         model = model or self.config.get("default_model", "llama3")
-        return f"[Ollama-{model}] Mock response to: '{text}'"
+        return get_scenario_response(text, self.get_name(), model)
