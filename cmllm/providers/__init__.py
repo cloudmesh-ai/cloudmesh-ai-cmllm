@@ -1,11 +1,17 @@
 from .base_provider import BaseLLMProvider
 from .ollama_provider import OllamaProvider
 from .vllm_provider import VLLMProvider
+from .anthropic_provider import AnthropicProvider
+from .azure_provider import AzureOpenAIProvider
+from .bedrock_provider import BedrockProvider
 from typing import Dict, Any, Type
 
 _PROVIDERS: Dict[str, Type[BaseLLMProvider]] = {
     "ollama": OllamaProvider,
     "vllm": VLLMProvider,
+    "anthropic": AnthropicProvider,
+    "azure": AzureOpenAIProvider,
+    "bedrock": BedrockProvider,
 }
 
 def get_provider(name: str, config: Dict[str, Any]) -> BaseLLMProvider:
