@@ -5,10 +5,10 @@ from typing import Dict, Any
 from .providers import get_provider, list_available_providers
 from .base_server import start_server
 
-CONFIG_PATH = os.path.expanduser("~/.config/cloudmesh/llms.yaml")
+CONFIG_PATH = os.path.expanduser("~/.config/cloudmesh/llms-mock.yaml")
 
 
-CONFIG_PATH = os.path.expanduser("~/.config/cloudmesh/llms.yaml")
+CONFIG_PATH = os.path.expanduser("~/.config/cloudmesh/llms-mock.yaml")
 
 def load_config() -> Dict[str, Any]:
     if not os.path.exists(CONFIG_PATH):
