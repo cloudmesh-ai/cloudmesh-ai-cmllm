@@ -19,7 +19,7 @@ Goal: Make the mock server behave like a real, unpredictable production LLM API.
 - [ ] Dynamic Model State:
     - Add an API route to load/unload models.
     - Simulate GPU Out-of-Memory (OOM) errors when too many models are loaded.
-- [ ] Enhanced Mock Data: Move beyond simple strings to use Scenario Templates (e.g., simulating a Safety Refusal or a Hallucination based on specific prompt keywords).
+- [x] Enhanced Mock Data: Move beyond simple strings to use Scenario Templates (e.g., simulating a Safety Refusal or a Hallucination based on specific prompt keywords).
 
 ## Phase 3: Expansion & DX (Low Priority)
 Goal: Increase the utility and ease of use of the tool.
