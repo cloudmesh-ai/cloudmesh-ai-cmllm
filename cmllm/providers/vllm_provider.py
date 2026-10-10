@@ -1,4 +1,4 @@
-from .base import BaseLLMProvider
+from .base_provider import BaseLLMProvider
 from typing import List, Dict, Any
 
 class VLLMProvider(BaseLLMProvider):
