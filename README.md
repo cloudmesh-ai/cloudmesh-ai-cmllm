@@ -1,38 +1,50 @@
-# Cloudmesh AI CMLLM (Mock LLM Provider)
+# Cloudmesh AI cmm (Mock LLM Provider)
 
-`cloudmesh-ai-cmllm` is a lightweight, OpenAI-compatible mock LLM service designed for developers and testers. It allows you to simulate various LLM providers (like Ollama and vLLM) without needing actual GPU infrastructure or expensive API keys, making it ideal for CI/CD pipelines, local development, and architectural prototyping.
+`cloudmesh-ai-cmm` is a professional-grade, OpenAI-compatible mock LLM service designed for developers and testers. It allows you to simulate various LLM providers and production-grade failures without needing actual GPU infrastructure or expensive API keys, making it the perfect tool for CI/CD pipelines, local development, and resilience testing.
 
 ## Key Features
 
-- **OpenAI-Compatible API**: Implements the standard `/v1/chat/completions`, `/v1/completions`, and `/v1/embeddings` endpoints, allowing you to swap real LLM endpoints for this mock server with zero code changes.
-- **Multi-Provider Simulation**: Switch between different mock provider behaviors (e.g., Ollama vs. vLLM) to test how your application handles different model responses and availability.
-- **Zero Infrastructure Required**: No GPUs, no Docker, and no API keys needed. The mock server runs as a simple Python process.
-- **Developer-Friendly Tools**:
-    - **Mock Server**: A FastAPI-powered server with built-in Swagger documentation (`/docs`).
-    - **CLI Tool**: A dedicated `cmllm` command for quick prompting and provider management.
-- **Observability Mocks**: Includes mock `/health` and `/metrics` endpoints to test monitoring and orchestration (e.g., Kubernetes probes).
+- **OpenAI-Compatible API**: Implements the standard `/v1/chat/completions`, `/v1/completions`, and `/v1/embeddings` endpoints. Swap real LLM endpoints for this mock server with zero code changes.
+- **Multi-Provider Simulation**: High-fidelity simulation of different providers (Ollama, vLLM, Anthropic, Azure OpenAI, AWS Bedrock), including provider-specific response headers and error formats (Quirks).
+- **Chaos Engineering Engine**: Test your application's resilience by simulating real-world API instability:
+    - **Random Failures**: Inject 429 (Rate Limit) and 500 (Internal Error) responses.
+    - **Simulated Latency**: Configure min/max delays to test timeout handling.
+    - **TPM & Context Limits**: Simulate Tokens-Per-Minute limits and Context Window overflows.
+    - **GPU OOM Simulation**: Restrict which models are "loaded" to simulate memory errors.
+    - **The Meltdown Profile**: A one-click catastrophic failure sequence (Latency $\rightarrow$ Total Failure $\rightarrow$ Service Unavailable).
+- **Scenario-Based Mocking**: Move beyond static strings. Use keyword-based templates to simulate specific behaviors like **Safety Refusals**, **Hallucinations**, or **Edge-Case Responses**.
+- **Dual-Interface GUI**:
+    - **User Chat UI** (`/chat`): A polished, real-time markdown chat interface with a live latency monitor.
+    - **Admin Dashboard** (`/admin`): A powerful control center to toggle chaos settings, manage loaded models, and edit scenarios in real-time.
+- **Observability Mocks**: Includes mock `/health` and `/metrics` endpoints to test Kubernetes probes and monitoring stacks.
 
 ## Quick Start
 
 ### 1. Installation
 
 ```bash
-git clone https://github.com/cloudmesh-ai/cloudmesh-ai-cmllm.git
-cd cloudmesh-ai-cmllm
+git clone https://github.com/cloudmesh-ai/cloudmesh-ai-cmm.git
+cd cloudmesh-ai-cmm
 pip install -e .
 ```
 
 ### 2. Using the Mock Server
 
-Start the server to expose an OpenAI-compatible API:
+Start the server to expose the OpenAI-compatible API:
 ```bash
-cmllm serve --port 8000
+cmm serve --port 8888
 ```
-The server is now available at `http://localhost:8000`. You can explore the API via the built-in docs at `http://localhost:8000/docs`.
+
+The server is now available at `http://localhost:8888`. 
+
+**Explore the Interfaces:**
+- **User Chat UI**: `http://localhost:8888/chat`
+- **Admin Dashboard**: `http://localhost:8888/admin`
+- **API Documentation**: `http://localhost:8888/docs`
 
 **Example API call:**
 ```bash
-curl http://localhost:8000/v1/chat/completions \
+curl http://localhost:8888/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "ollama-llama3",
@@ -42,17 +54,17 @@ curl http://localhost:8000/v1/chat/completions \
 
 ### 3. Using the CLI
 
-The `cmllm` command allows you to interact with the mock providers directly from your terminal:
+The `cmm` command allows you to interact with the mock providers directly:
 
 ```bash
 # Send a prompt using the default provider
-cmllm prompt "What is Cloudmesh AI?"
+cmm prompt "What is Cloudmesh AI?"
 
 # Switch the active provider to vLLM
-cmllm provider set vllm
+cmm provider set vllm
 
 # List available models for the active provider
-cmllm list
+cmm list
 ```
 
 ## Mock Provider Matrix
@@ -61,6 +73,20 @@ cmllm list
 | :--- | :--- | :--- | :--- |
 | **Ollama** | Local-first LLM feel | `llama3`, `mistral`, `phi3` | ✅ Mocked |
 | **vLLM** | High-throughput API feel | `gpt-4-mock`, `mixtral` | ✅ Mocked |
+| **Anthropic** | Claude-style responses & headers | `claude-3-opus`, `haiku` | ✅ Mocked |
+| **Azure OpenAI** | Enterprise API feel & quirks | `gpt-4`, `gpt-35-turbo` | ✅ Mocked |
+| **AWS Bedrock** | AWS-style error formats | `titan`, `claude-v2` | ✅ Mocked |
+
+## Docker Deployment
+
+Run the mock server using Docker for an isolated setup:
+
+```bash
+# Start the server in the background
+docker-compose up -d
+```
+
+The server will be available at `http://localhost:8888`. Your configuration is persisted via a volume mount to `~/.config/cloudmesh/` on your host machine.
 
 ## Documentation
 
@@ -70,6 +96,9 @@ Detailed guides are available in the `/docs` folder:
 - [Configuration Guide](docs/configuration.md)
 - [CLI Reference](docs/cli.md)
 - [Architecture Overview](docs/architecture.md)
+- [Chaos Engineering Guide](docs/chaos.md)
+- [Scenario Management](docs/scenarios.md)
+- [GUI Guide](docs/gui.md)
 - [Contributing Guide](docs/contributing.md)
 
 ## Testing

@@ -8,9 +8,12 @@ class AzureOpenAIProvider(BaseLLMProvider):
     def get_name(self) -> str:
         return "azure"
 
+    def get_quirk_profile_name(self) -> str:
+        return "azure"
+
     def list_models(self) -> List[str]:
         return ["gpt-4", "gpt-35-turbo", "gpt-4-turbo"]
 
-    def prompt(self, text: str, model: str = None) -> str:
+    def _generate_response(self, text: str, model: str = None) -> str:
         model = model or self.config.get("default_model", "gpt-4")
         return get_scenario_response(text, self.get_name(), model)

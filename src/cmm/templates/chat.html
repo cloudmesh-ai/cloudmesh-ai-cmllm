@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cmm Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
+    <!-- Markdown and Highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <style>
+        .prose pre { background-color: #1e293b !important; border-radius: 0.5rem; padding: 1rem; color: #f8fafc; }
+        .prose code { color: #ef4444; background-color: #f1f5f9; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.875em; }
+        .prose pre code { color: inherit; background-color: transparent; padding: 0; }
+        .prose p { margin-bottom: 1rem; }
+        .prose ul, .prose ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+        .prose ul { list-style-type: disc; }
+        .prose ol { list-style-type: decimal; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 h-screen flex flex-col font-sans">
+    <!-- Header / Model Selector -->
+    <header class="bg-white border-b border-slate-200 p-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                <img src="/static/logo-white.png" class="w-5 h-5 object-contain" alt="CM">
+            </div>
+            <h1 class="text-lg font-semibold tracking-tight">Cloudmesh AI Mock Chat</h1>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div id="latency-meter" class="hidden flex items-center gap-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full text-[11px] font-medium text-slate-500 transition-all">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                Latency: <span id="latency-value">0ms</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <label for="model-select" class="text-xs font-medium text-slate-500 uppercase">Model</label>
+                <select id="model-select" name="model" class="bg-slate-100 border-none text-sm rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="gpt-4o">gpt-4o</option>
+                    <option value="claude-3-5-sonnet">claude-3-5-sonnet</option>
+                    <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-2">
+                <label for="view-mode" class="text-xs font-medium text-slate-500 uppercase">View</label>
+                <select id="view-mode" class="bg-slate-100 border-none text-sm rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="human">Human</option>
+                    <option value="raw">Raw</option>
+                </select>
+            </div>
+            <div class="h-6 w-px bg-slate-200"></div>
+            <button id="clear-chat" class="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors uppercase tracking-wider">Clear Chat</button>
+        </div>
+    </header>
+
+    <!-- Chat Window -->
+    <main id="chat-window" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 max-w-4xl mx-auto w-full">
+        <!-- Welcome Message -->
+        <div class="flex gap-4 mb-6">
+            <div class="w-8 h-8 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                <img src="/static/logo-white.png" class="w-5 h-5 object-contain" alt="CM">
+            </div>
+            <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm max-w-[80%] text-sm leading-relaxed text-slate-700">
+                <p>Hello! I am a simulation of an LLM provider. You can use the Admin panel to induce latency, failures, or change my persona. How can I help you today?</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Input Area -->
+    <footer class="p-4 bg-white border-t border-slate-200">
+        <div class="max-w-4xl mx-auto relative">
+            <form hx-post="/chat/send"
+                  hx-target="#chat-window"
+                  hx-swap="beforeend"
+                  hx-on::after-request="this.reset()"
+                  class="flex gap-2">
+                <input type="text"
+                       name="message"
+                       placeholder="Type your message..."
+                       class="flex-1 bg-slate-100 border-none rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                       required>
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-medium text-sm transition-colors flex items-center gap-2">
+                    <span>Send</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </form>
+        </div>
+        <p class="text-center text-[10px] text-slate-400 mt-3">cmm Simulation Interface &bull; For development use only</p>
+    </footer>
+
+    <script>
+        // Auto-scroll to bottom on new messages
+        const observer = new MutationObserver(() => {
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Check for any new bot-response elements that need streaming
+            document.querySelectorAll('#bot-response').forEach(el => {
+                if (!el.dataset.streaming) {
+                    startStreaming(el);
+                }
+            });
+        });
+        observer.observe(document.getElementById('chat-window'), { childList: true, subtree: true });
+
+        // Clear Chat
+        document.getElementById('clear-chat').addEventListener('click', () => {
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.innerHTML = `
+                <div class="flex gap-4 mb-6">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                        <img src="/static/logo-white.png" class="w-5 h-5 object-contain" alt="CM">
+                    </div>
+                    <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm max-w-[80%] text-sm leading-relaxed text-slate-700">
+                        <p>Hello! I am a simulation of an LLM provider. You can use the Admin panel to induce latency, failures, or change my persona. How can I help you today?</p>
+                    </div>
+                </div>
+            `;
+        });
+
+        async function startStreaming(el) {
+            el.dataset.streaming = "true";
+            const message = el.dataset.message;
+            const latencyMeter = document.getElementById('latency-meter');
+            const latencyValue = document.getElementById('latency-value');
+
+            latencyMeter.classList.remove('hidden');
+
+            const eventSource = new EventSource(`/chat/stream?message=${encodeURIComponent(message)}`);
+            let fullText = "";
+            let lastTokenTime = performance.now();
+
+            eventSource.onmessage = (event) => {
+                const now = performance.now();
+                const latency = Math.round(now - lastTokenTime);
+                lastTokenTime = now;
+
+                latencyValue.innerText = `${latency}ms`;
+
+                let chunkText = "";
+                try {
+                    // SSE data often starts with "data: ", but the EventSource API
+                    // already strips the "data: " prefix and gives us just the value.
+                    const data = JSON.parse(event.data);
+                    const viewMode = document.getElementById('view-mode').value;
+
+                    if (viewMode === 'human') {
+                        // The server sends: {'raw': ..., 'text': ...}
+                        chunkText = data.text || "";
+                    } else {
+                        chunkText = JSON.stringify(data, null, 2) + "\n";
+                    }
+                } catch (e) {
+                    // Fallback for non-JSON data
+                    chunkText = event.data;
+                }
+
+                fullText += chunkText;
+                el.innerHTML = marked.parse(fullText);
+                Prism.highlightAllUnder(el);
+            };
+
+            eventSource.onerror = () => {
+                eventSource.close();
+                latencyMeter.classList.add('hidden');
+            };
+        }
+    </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from cmllm.base_server import app
+from cmm.base_server import app
 
 client = TestClient(app)
 
@@ -22,7 +22,7 @@ def test_chat_completions_non_streaming():
     assert response.status_code == 200
     data = response.json()
     assert data["object"] == "chat.completion"
-    assert data["choices"][0]["message"]["content"].startswith("[Ollama-llama3]")
+    assert data["choices"][0]["message"]["content"].upper().startswith("[OLLAMA-LLAMA3]")
 
 def test_chat_completions_streaming():
     payload = {
