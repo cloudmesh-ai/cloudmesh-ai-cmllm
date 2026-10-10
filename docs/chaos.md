@@ -1,6 +1,6 @@
 # Chaos Engineering Guide
 
-The Chaos Engine in Cloudmesh AI cmm is designed to help you build resilient LLM applications. In the real world, LLM APIs are not perfectly stable—they experience latency spikes, rate limits, and occasional catastrophic failures.
+The Chaos Engine in Cloudmesh AI llm-mock is designed to help you build resilient LLM applications. In the real world, LLM APIs are not perfectly stable—they experience latency spikes, rate limits, and occasional catastrophic failures.
 
 By simulating these conditions, you can ensure your application handles errors gracefully, implements proper retry logic, and provides a good user experience even when the backend is struggling.
 

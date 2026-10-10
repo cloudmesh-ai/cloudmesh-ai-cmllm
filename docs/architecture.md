@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Cloudmesh AI cmm is designed as a **Mock Service**, providing a thin, OpenAI-compatible layer over a set of simulated LLM providers. It focuses on simulating not just the "happy path" of an AI response, but the complex, often unpredictable nature of production LLM APIs.
+Cloudmesh AI llm-mock is designed as a **Mock Service**, providing a thin, OpenAI-compatible layer over a set of simulated LLM providers. It focuses on simulating not just the "happy path" of an AI response, but the complex, often unpredictable nature of production LLM APIs.
 
 ## System Components
 

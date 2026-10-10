@@ -1,6 +1,6 @@
 # Scenario Management Guide
 
-Static mock responses (like "I am a helpful AI") are often insufficient for testing real-world edge cases. Cloudmesh AI cmm uses a **Scenario-Based Mocking** system that allows you to simulate specific model behaviors based on the content of the user's prompt.
+Static mock responses (like "I am a helpful AI") are often insufficient for testing real-world edge cases. Cloudmesh AI llm-mock uses a **Scenario-Based Mocking** system that allows you to simulate specific model behaviors based on the content of the user's prompt.
 
 ## How Scenarios Work
 

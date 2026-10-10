@@ -1,6 +1,6 @@
 # Configuration Guide
 
-Cloudmesh AI cmm uses a combination of a static YAML configuration file for defaults and a dynamic runtime state managed via the Admin GUI.
+Cloudmesh AI llm-mock uses a combination of a static YAML configuration file for defaults and a dynamic runtime state managed via the Admin GUI.
 
 ## Static Configuration
 

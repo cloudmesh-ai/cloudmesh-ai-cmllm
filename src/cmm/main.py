@@ -1,6 +1,7 @@
 import click
 import yaml
 import os
+import asyncio
 import logging
 from typing import Dict, Any
 from .providers import get_provider, list_available_providers
@@ -52,13 +53,20 @@ def prompt(text, provider, model):
     config = load_config()
     provider_name = provider or config.get('active_provider', 'ollama')
 
-    try:
-        provider_cfg = config.get('providers', {}).get(provider_name, {})
-        llm = get_provider(provider_name, provider_cfg)
-        response = llm.prompt(text, model=model)
-        click.echo(response)
-    except Exception as e:
-        click.secho(f"Error: {e}", fg='red')
+    async def run_prompt():
+        try:
+            provider_cfg = config.get('providers', {}).get(provider_name, {})
+            llm = get_provider(provider_name, provider_cfg)
+            response, finish_reason = await llm.prompt(text, model=model)
+            return response
+        except Exception as e:
+            return e
+
+    result = asyncio.run(run_prompt())
+    if isinstance(result, Exception):
+        click.secho(f"Error: {result}", fg='red')
+    else:
+        click.echo(result)
 
 @cli.command('list')
 @click.option('--provider', '-p', help='Override the active provider.')
@@ -83,8 +91,8 @@ def config_init():
     default_config = {
         "active_provider": "ollama",
         "providers": {
-            "ollama": {"default_model": "llama3"},
-            "vllm": {"default_model": "gpt-4-mock"},
+            "ollama": {"default_model": "llama3", "mode": "mock"},
+            "vllm": {"default_model": "gpt-4-mock", "mode": "mock"},
         }
     }
 

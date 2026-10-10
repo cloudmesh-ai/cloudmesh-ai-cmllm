@@ -29,7 +29,7 @@ Goal: Increase the utility and ease of use of the tool.
 - [x] Advanced Streaming: Implement token-by-token timing that varies based on the mock model's size (e.g., a mock llama-70b streams slower than a phi-3).
 
 ## Phase 4: High-Fidelity Simulation (Future)
-Goal: Move from a "mock" to a professional-grade simulation environment.
+Goal: Move from a "mock" to a high-fidelity simulation environment.
 
 ### 4.1 Technical Fidelity
 - [x] True Tokenization Mocking: Implement token-count simulation to test Max Token limits and Context Window overflows.

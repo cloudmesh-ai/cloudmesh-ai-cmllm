@@ -8,6 +8,7 @@ class BaseLLMProvider(ABC):
 
     def __init__(self, config: Dict[str, Any]):
         self.config = config
+        self.mode = config.get("mode", "mock")
 
     def get_quirk_profile_name(self) -> str:
         """Return the quirk profile name this provider uses. Defaults to 'default'."""
@@ -17,12 +18,12 @@ class BaseLLMProvider(ABC):
         """Simulate token counting (1 token approx 4 characters)."""
         return len(text) // 4 if text else 0
 
-    def prompt(self, text: str, model: str = None, max_tokens: int = None) -> Tuple[str, str]:
+    async def prompt(self, text: str, model: str = None, max_tokens: int = None) -> Tuple[str, str]:
         """
         Send a prompt to the LLM and return the response and finish_reason.
         The response is truncated if it exceeds max_tokens.
         """
-        response = self._generate_response(text, model)
+        response = await self._generate_response(text, model)
         finish_reason = "stop"
 
         if max_tokens is not None:
@@ -35,7 +36,7 @@ class BaseLLMProvider(ABC):
         return response, finish_reason
 
     @abstractmethod
-    def _generate_response(self, text: str, model: str = None) -> str:
+    async def _generate_response(self, text: str, model: str = None) -> str:
         """Internal method to be implemented by providers to get raw response text."""
         pass
 
@@ -62,7 +63,7 @@ class BaseLLMProvider(ABC):
         Simulates token-by-token timing based on the model's speed.
         """
         model = model or self.config.get("default_model", "default")
-        response, finish_reason = self.prompt(text, model, max_tokens)
+        response, finish_reason = await self.prompt(text, model, max_tokens)
 
         delay = self.get_model_speed(model)
         # Split by space to simulate tokens
