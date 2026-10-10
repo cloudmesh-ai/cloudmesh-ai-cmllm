@@ -1,5 +1,6 @@
 from .base_provider import BaseLLMProvider
 from typing import List, Dict, Any
+from ..scenarios import get_scenario_response
 
 class VLLMProvider(BaseLLMProvider):
     """Mock implementation of a vLLM provider."""
@@ -12,4 +13,4 @@ class VLLMProvider(BaseLLMProvider):
 
     def prompt(self, text: str, model: str = None) -> str:
         model = model or self.config.get("default_model", "gpt-4-mock")
-        return f"[vLLM-{model}] High-performance mock response to: '{text}'"
+        return get_scenario_response(text, self.get_name(), model)
