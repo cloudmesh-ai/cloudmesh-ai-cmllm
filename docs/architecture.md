@@ -37,3 +37,12 @@ To simulate different LLM behaviors, the project uses a provider pattern:
 
 ## Data Flow
 `External Request` $\rightarrow$ `FastAPI Route` $\rightarrow$ `Chaos Engine Check` $\rightarrow$ `Provider Factory` $\rightarrow$ `Scenario Matcher` $\rightarrow$ `Deterministic Mock Response` $\rightarrow$ `Quirk Profile Formatting` $\rightarrow$ `OpenAI-Formatted JSON`
+
+```mermaid
+graph LR
+    A[Request] --> B[FastAPI]
+    B --> C[Chaos Engine]
+    C --> D[Provider]
+    D --> E[Scenario Matcher]
+    E --> F[Response]
+```

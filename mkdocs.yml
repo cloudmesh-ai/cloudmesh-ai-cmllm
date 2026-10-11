@@ -3,8 +3,12 @@ theme:
   name: material
 nav:
   - Home: index.md
+  - Getting Started: getting-started.md
   - Installation: installation.md
   - Configuration: configuration.md
   - CLI Reference: cli.md
   - Architecture: architecture.md
+  - GUI Guide: gui.md
+  - Chaos Engineering: chaos.md
+  - Scenario Management: scenarios.md
   - Contributing: contributing.md

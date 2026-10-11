@@ -44,3 +44,44 @@ Test how your application handles prompts that are too large for the model.
 Simulate the behavior of a provider that can only load a limited number of models into VRAM.
 - **How it works**: In the Admin Dashboard, you can specify a list of **Loaded Models**. If a request is made for a model not in this list, the server returns a `404 Not Found`, simulating an OOM error or a model-not-loaded state.
 - **Use Case**: Test your application's ability to handle "Model Not Found" errors and prompt the user to select a different model.
+
+## Testing Recipes
+
+Transform the Chaos Engine's features into solutions for specific production problems. Use these recipes to validate your application's resilience.
+
+### Recipe: The "Flaky API"
+**Goal**: Test exponential backoff and retry logic.
+
+**Configuration Steps**:
+1. Open the **Admin Dashboard** (`/admin`).
+2. Set the **Failure Rate** to `5%`.
+3. Set the **Latency Range** to `Min: 1s`, `Max: 3s`.
+
+**What to look for**:
+- Ensure the application does not immediately surface an error to the user on the first failure.
+- Verify that retries occur with increasing delays (exponential backoff).
+- The request should eventually succeed once the random failure roll passes.
+
+### Recipe: The "Cold Start"
+**Goal**: Test handling of model loading/OOM errors.
+
+**Configuration Steps**:
+1. Open the **Admin Dashboard** (`/admin`).
+2. Locate the **Loaded Models** list.
+3. Remove the model your application is currently targeting from the list.
+
+**What to look for**:
+- The server will return a `404 Not Found` (simulating a GPU OOM or unloaded model).
+- Verify that the application handles this gracefully (e.g., by notifying the user that the model is loading or automatically falling back to a different available model).
+
+### Recipe: The "Safety Wall"
+**Goal**: Test if the application correctly handles safety refusals without crashing.
+
+**Configuration Steps**:
+1. Send a prompt containing restricted keywords such as `"illegal"` or `"exploit"`.
+2. Ensure the server is configured to return a standard safety refusal for these terms.
+
+**What to look for**:
+- The application should receive the refusal response from the API.
+- The UI should display the refusal message clearly to the user.
+- Verify that no unhandled exceptions or "empty response" errors are triggered in the frontend.
