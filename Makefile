@@ -50,4 +50,7 @@ view:
 	until curl -s http://localhost:8888/docs > /dev/null; do sleep 0.5; done && \
 	open http://localhost:8888/docs && \
 	open http://localhost:8888/admin && \
-	open http://localhost:8888/chat
+	open http://localhost:8888/chat && \
+	open https://github.com/cloudmesh-ai/cloudmesh-ai-llm-mock && \
+	open https://cloudmesh-ai.github.io/cloudmesh-ai-llm-mock
+
