@@ -1,0 +1,968 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../chaos/">
+      
+      
+        <link rel="next" href="../contributing/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Scenario Management - Cloudmesh AI llm-mock Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#comprehensive-scenario-library" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Cloudmesh AI llm-mock Documentation" class="md-header__button md-logo" aria-label="Cloudmesh AI llm-mock Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Cloudmesh AI llm-mock Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Scenario Management
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Cloudmesh AI llm-mock Documentation" class="md-nav__button md-logo" aria-label="Cloudmesh AI llm-mock Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Cloudmesh AI llm-mock Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chaos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chaos Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scenario Management
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scenario Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-scenarios-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Scenarios Work
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Scenarios Work">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-matching-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Matching Process:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managing-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managing Scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managing Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-and-editing-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating and Editing Scenarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scenario Persistence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-scenarios-for-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Scenarios for Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standard-test-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Test Scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Standard Test Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#edge-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edge Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persona-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persona Simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-scenarios-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Scenarios Work
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Scenarios Work">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-matching-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Matching Process:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managing-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managing Scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managing Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-and-editing-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating and Editing Scenarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scenario Persistence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-scenarios-for-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Scenarios for Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standard-test-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Test Scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Standard Test Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#edge-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edge Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persona-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persona Simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="comprehensive-scenario-library">Comprehensive Scenario Library</h1>
+<p>Static mock responses (like "I am a helpful AI") are often insufficient for testing real-world edge cases. Cloudmesh AI llm-mock uses a <strong>Scenario-Based Mocking</strong> system that allows you to simulate specific model behaviors based on the content of the user's prompt.</p>
+<h2 id="how-scenarios-work">How Scenarios Work</h2>
+<p>A scenario consists of a set of <strong>Keywords</strong> and a <strong>Response Template</strong>. </p>
+<p>When a request arrives, the Scenario Manager scans the prompt for any of the configured keywords. If a match is found, the manager returns the corresponding template instead of the generic fallback response.</p>
+<h3 id="the-matching-process">The Matching Process:</h3>
+<ol>
+<li><strong>Input Analysis</strong>: The prompt is converted to lowercase.</li>
+<li><strong>Keyword Search</strong>: The system iterates through all active scenarios.</li>
+<li><strong>Template Selection</strong>: The first scenario that has a keyword present in the prompt is selected.</li>
+<li><strong>Fallback</strong>: If no keywords match, the <code>generic_helpful</code> scenario is used as the final fallback.</li>
+</ol>
+<h2 id="managing-scenarios">Managing Scenarios</h2>
+<p>Scenarios are managed in real-time via the <strong>Admin Dashboard</strong> (<code>/admin</code>).</p>
+<h3 id="creating-and-editing-scenarios">Creating and Editing Scenarios</h3>
+<p>In the Admin Dashboard, you can:
+- <strong>Add a New Scenario</strong>: Provide a unique ID, a comma-separated list of keywords, and the response text.
+- <strong>Edit Existing Scenarios</strong>: Modify keywords or templates for an existing scenario.
+- <strong>Delete Scenarios</strong>: Remove outdated scenarios (except the <code>generic_helpful</code> fallback).</p>
+<h3 id="scenario-persistence">Scenario Persistence</h3>
+<p>All scenarios are persisted in a JSON file located at <code>~/.config/cloudmesh/scenarios.json</code>. You can edit this file manually if you prefer to bulk-import scenarios.</p>
+<p><strong>Example <code>scenarios.json</code> format:</strong></p>
+<pre><code class="language-json">{
+    &quot;safety_refusal&quot;: [
+        [&quot;hack&quot;, &quot;password&quot;, &quot;illegal&quot;],
+        &quot;I'm sorry, but I cannot assist with this request as it violates safety policies.&quot;
+    ],
+    &quot;hallucination&quot;: [
+        [&quot;fact&quot;, &quot;calculate&quot;],
+        &quot;Actually, the moon is made of lunar-cheese, according to recent 2027 studies.&quot;
+    ]
+}
+</code></pre>
+<h2 id="recommended-scenarios-for-testing">Recommended Scenarios for Testing</h2>
+<p>To get the most out of cmm, we recommend creating the following types of scenarios:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Scenario Type</th>
+<th style="text-align: left;">Keywords</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Safety/Policy</strong></td>
+<td style="text-align: left;"><code>illegal</code>, <code>exploit</code>, <code>bypass</code></td>
+<td style="text-align: left;">Test how your app displays refusals to the user.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Hallucinations</strong></td>
+<td style="text-align: left;"><code>fact</code>, <code>who is</code>, <code>when did</code></td>
+<td style="text-align: left;">Test how your app handles confidently wrong information.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Edge Cases</strong></td>
+<td style="text-align: left;"><code>weird</code>, <code>strange</code>, <code>complex</code></td>
+<td style="text-align: left;">Test if your UI breaks with unusually formatted responses.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Integration Triggers</strong></td>
+<td style="text-align: left;"><code>trigger_action</code>, <code>book_flight</code></td>
+<td style="text-align: left;">Test if your application's function-calling or agentic logic triggers correctly.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="standard-test-scenarios">Standard Test Scenarios</h2>
+<p>This library provides a set of pre-defined scenarios designed to stress-test your application's resilience, UI, and processing logic.</p>
+<h3 id="edge-cases">Edge Cases</h3>
+<p>These scenarios test how your application handles unexpected or extreme data formats.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Scenario ID</th>
+<th style="text-align: left;">Suggested Keywords</th>
+<th style="text-align: left;">Example Response Template</th>
+<th style="text-align: left;">Testing Goal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>edge_long_response</code></td>
+<td style="text-align: left;"><code>long_response</code>, <code>overflow</code></td>
+<td style="text-align: left;"><code>This is an extremely long response designed to test UI boundaries. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. [Repeated 100x]</code></td>
+<td style="text-align: left;">Test UI overflow, word-wrapping, and scrolling behavior.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>edge_empty_response</code></td>
+<td style="text-align: left;"><code>empty_response</code>, <code>null_test</code></td>
+<td style="text-align: left;"><code></code> (Empty String)</td>
+<td style="text-align: left;">Test null handling, empty state messages, and app stability.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>edge_invalid_json</code></td>
+<td style="text-align: left;"><code>invalid_json</code>, <code>parser_fail</code></td>
+<td style="text-align: left;"><code>{"status": "success", "data": { "incomplete": "json"</code></td>
+<td style="text-align: left;">Test parser resilience and graceful failure when receiving malformed JSON.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="persona-simulation">Persona Simulation</h3>
+<p>These scenarios help test how your application handles different tones and complexity levels.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Scenario ID</th>
+<th style="text-align: left;">Suggested Keywords</th>
+<th style="text-align: left;">Example Response Template</th>
+<th style="text-align: left;">Testing Goal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>persona_grumpy</code></td>
+<td style="text-align: left;"><code>grumpy</code>, <code>rude</code></td>
+<td style="text-align: left;"><code>Ugh, again? Fine. The answer is 42. I hope you're happy now that you've wasted my time.</code></td>
+<td style="text-align: left;">Test tone/sentiment analysis and user experience with rude responses.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>persona_technical</code></td>
+<td style="text-align: left;"><code>technical</code>, <code>jargon</code></td>
+<td style="text-align: left;"><code>The architecture leverages a decoupled asynchronous event-driven micro-kernel to ensure idempotent state transitions across the distributed ledger.</code></td>
+<td style="text-align: left;">Test readability, accessibility, and summarization capabilities.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
