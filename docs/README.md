@@ -1,6 +1,6 @@
 # Cloudmesh AI llm-mock (Mock LLM Provider)
 
-![Cloudmesh AI llm-mock Banner](/docs/images/cmm-chatgpt.png)
+![Cloudmesh AI llm-mock Banner](images/cmm-chatgpt.png)
 
 `cloudmesh-ai-llm-mock` is a professional-grade, OpenAI-compatible mock LLM service designed for developers and testers. It allows you to simulate various LLM providers and production-grade failures without needing actual GPU infrastructure or expensive API keys, making it the perfect tool for CI/CD pipelines, local development, and resilience testing.
 
